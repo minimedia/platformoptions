@@ -1,0 +1,434 @@
+<?php
+
+/**
+ *  Implements hook_permission().
+ */
+function platformoptions_permission() {
+  return array(
+    'administer platformoptions' => array(
+      'title' => t('Administer Campaign settings'),
+      'description' => t('Perform administration tasks for Platformoptions.'),
+    ),
+  );
+}
+
+/**
+ *  Implements hook_menu().
+ */
+function platformoptions_menu() {
+  $items = array();
+  $items['admin/settings/platformoptions'] = array(
+    'title' => 'Campaign settings',
+    'description' => 'This is where you set custom tracking, page head image as well as ad script tags',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('platformoptions_admin'),
+    'access arguments' => array('administer platformoptions'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ *  Implements hook_preprocess().
+ */
+function platformoptions_preprocess(&$vars, $hook) {
+  if ($hook === 'page') {
+    $vars['customtracking'] = token_replace(variable_get('platformoptions_customtracking', ''), array('date'));
+    $vars['panorama1'] = variable_get('platformoptions_panorama1', '');
+    $vars['panorama2'] = variable_get('platformoptions_panorama2', '');
+    $vars['insider1'] = variable_get('platformoptions_insider1', '');
+    $vars['outsider1'] = variable_get('platformoptions_outsider1', '');
+    $vars['mobile_panorama'] = variable_get('platformoptions_mobile_panorama', '');
+    $vars['mobile_insider'] = variable_get('platformoptions_mobile_insider', '');
+    $vars['mobile_article'] = variable_get('platformoptions_mobile_article', '');
+
+    if (variable_get('platformoptions_pagehead_desktop', '') !== 0) {
+      error_log('creating url for pagehead');
+      $file = file_load(variable_get('platformoptions_pagehead_desktop'));
+      $url = $file->uri;
+      $vars['pagehead_desktop'] = file_create_url($url);
+      error_log('url = ' . $vars['pagehead_desktop']);
+    }
+    if (variable_get('platformoptions_pagehead_mobile', '') !== 0) {
+      $file = file_load(variable_get('platformoptions_pagehead_mobile'));
+      $url = $file->uri;
+      $vars['pagehead_mobile'] = file_create_url($url);
+    }
+    if (variable_get('platformoptions_favicon', '') !== 0) {
+      $file = file_load(variable_get('platformoptions_favicon'));
+      $url = $file->uri;
+      $vars['favicon'] = file_create_url($url);
+    }
+  }
+}
+
+function platformoptions_admin() {
+  $form = array();
+  $form['tracking'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Tracking'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['tracking']['platformoptions_googleanalyticsaccount'] = array(
+    '#type' => 'textfield',
+    '#size' => 32,
+    '#maxlength' => 32,
+    '#title' => t('Google Analytics Account'),
+    '#default_value' => variable_get('googleanalytics_account', ''),
+    '#description' => t("Paste Google Analytics Account ID here."),
+    '#required' => FALSE,
+  );
+  $form['tracking']['platformoptions_customtracking'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Custom tracking'),
+    '#default_value' => variable_get('platformoptions_customtracking', ''),
+    '#description' => t("Paste customer tracking code here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
+    '#required' => FALSE,
+  );
+  $form['ads'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Ads'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['ads']['platformoptions_panorama1'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Panorama 1'),
+    '#default_value' => variable_get('platformoptions_panorama1', ''),
+    '#description' => t("Paste panorama 1 ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['ads']['platformoptions_panorama2'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Panorama 2'),
+    '#default_value' => variable_get('platformoptions_panorama2', ''),
+    '#description' => t("Paste panorama 2 ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['ads']['platformoptions_insider1'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Insider 1'),
+    '#default_value' => variable_get('platformoptions_insider1', ''),
+    '#description' => t("Paste insider 1 ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['ads']['platformoptions_outsider1'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Outsider 1'),
+    '#default_value' => variable_get('platformoptions_outsider1', ''),
+    '#description' => t("Paste outsider 1 ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['ads']['platformoptions_mobile_panorama'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Mobile panorama'),
+    '#default_value' => variable_get('platformoptions_mobile_panorama', ''),
+    '#description' => t("Paste mobile panorama ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['ads']['platformoptions_mobile_insider'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Mobile insider'),
+    '#default_value' => variable_get('platformoptions_mobile_insider', ''),
+    '#description' => t("Paste mobile insider ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['ads']['platformoptions_mobile_article'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Mobile article'),
+    '#default_value' => variable_get('platformoptions_mobile_article', ''),
+    '#description' => t("Paste mobile article ad tag here."),
+    '#required' => FALSE,
+  );
+  $form['headers'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Headers'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  if(variable_get('platformoptions_visaannonsbalkar') === '1'){
+    $default = '1';
+  } else {
+    $default = '0';
+  }
+  $form['headers']['platformoptions_visaannonsbalkar'] = array(
+    '#type' => 'radios',
+    '#title' => t('Show headers'),
+    '#options' => array('1'=>'Yes','0'=>'No'),
+    '#default_value' => $default,
+    '#description' => t("Enable or disable display of Annonsbalk topp and Annonsbalk botten headers."),
+    '#required' => FALSE,
+  );
+  $form['headers']['platformoptions_annonsbalk_topp'] = array(
+    '#type' => 'textfield',
+    '#size' => 64,
+    '#maxlength' => 128,
+    '#title' => t('Annonsbalk topp'),
+    '#default_value' => variable_get('platformoptions_annonsbalk_topp', 'Hela webbplatsen är information från företaget'),
+    '#description' => t("Enter text to display in Annonsbalk Topp."),
+    '#required' => FALSE,
+  );
+  $form['headers']['platformoptions_annonsbalk_botten'] = array(
+    '#type' => 'textfield',
+    '#size' => 64,
+    '#maxlength' => 128,
+    '#title' => t('Annonsbalk botten'),
+    '#default_value' => variable_get('platformoptions_annonsbalk_botten', 'Hela webbplatsen är information från företaget'),
+    '#description' => t("Enter text to display in Annonsbalk Botten."),
+    '#required' => FALSE,
+  );
+  $form['img'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Images'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['img']['platformoptions_pagehead_desktop'] = array(
+    '#title' => t('Desktop pagehead image'),
+    '#type' => 'managed_file',
+    '#description' => t('Image must be 980x120px. The uploaded image will be displayed on top of each page.'),
+    '#default_value' => variable_get('platformoptions_pagehead_desktop', ''),
+    '#upload_location' => 'public://platformoptions/pagehead/desktop/',
+  );
+  $form['img']['platformoptions_pagehead_mobile'] = array(
+    '#title' => t('Mobile pagehead image'),
+    '#type' => 'managed_file',
+    '#description' => t('Image must be 480x80px. The uploaded image will be displayed on top of each page.'),
+    '#default_value' => variable_get('platformoptions_pagehead_mobile', ''),
+    '#upload_location' => 'public://platformoptions/pagehead/mobile/',
+  );
+  $form['img']['platformoptions_favicon'] = array(
+    '#title' => t('Browser favicon'),
+    '#type' => 'managed_file',
+    '#description' => t('Image must be 16x16px and png format. The uploaded image will be displayed as an icon for the site.'),
+    '#default_value' => variable_get('platformoptions_favicon', ''),
+    '#upload_location' => 'public://platformoptions/favicon/',
+  );
+  $form['social'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Social'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['social']['platformoptions_facebook'] = array(
+    '#type' => 'textfield',
+    '#size' => 32,
+    '#maxlength' => 64,
+    '#title' => t('Facebook Page ID'),
+    '#default_value' => variable_get('platformoptions_facebook', ''),
+    '#description' => t("Paste Facebook Page ID here to activate Facebook."),
+    '#required' => FALSE,
+  );
+  $form['#submit'][] = 'platformoptions_form_submit';
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_form_submit
+ */
+function platformoptions_form_submit($form, $form_state) {
+  if ($form_state['values']['platformoptions_googleanalyticsaccount'] !== '' &&
+    $form_state['values']['platformoptions_googleanalyticsaccount'] !== variable_get('googleanalytics_account', '')
+  ) {
+    variable_set('googleanalytics_account', $form_state['values']['platformoptions_googleanalyticsaccount']);
+  }
+  if ($form_state['values']['platformoptions_customtracking'] !== '' &&
+    $form_state['values']['platformoptions_customtracking'] !== variable_get('platformoptions_customtracking', '')
+  ) {
+    variable_set('platformoptions_customtracking', $form_state['values']['platformoptions_customtracking']);
+  }
+  if ($form_state['values']['platformoptions_panorama1'] !== '' &&
+    $form_state['values']['platformoptions_panorama1'] !== variable_get('platformoptions_panorama1', '')
+  ) {
+    variable_set('platformoptions_panorama1', $form_state['values']['platformoptions_panorama1']);
+  }
+  if ($form_state['values']['platformoptions_panorama2'] !== '' &&
+    $form_state['values']['platformoptions_panorama2'] !== variable_get('platformoptions_panorama2', '')
+  ) {
+    variable_set('platformoptions_panorama2', $form_state['values']['platformoptions_panorama2']);
+  }
+  if ($form_state['values']['platformoptions_insider1'] !== '' &&
+    $form_state['values']['platformoptions_insider1'] !== variable_get('platformoptions_insider1', '')
+  ) {
+    variable_set('platformoptions_insider1', $form_state['values']['platformoptions_insider1']);
+  }
+  if ($form_state['values']['platformoptions_outsider1'] !== '' &&
+    $form_state['values']['platformoptions_outsider1'] !== variable_get('platformoptions_outsider1', '')
+  ) {
+    variable_set('platformoptions_outsider1', $form_state['values']['platformoptions_outsider1']);
+  }
+  if ($form_state['values']['platformoptions_mobile_panorama'] !== '' &&
+    $form_state['values']['platformoptions_mobile_panorama'] !== variable_get('platformoptions_mobile_panorama', '')
+  ) {
+    variable_set('platformoptions_mobile_panorama', $form_state['values']['platformoptions_mobile_panorama']);
+  }
+  if ($form_state['values']['platformoptions_mobile_insider'] !== '' &&
+    $form_state['values']['platformoptions_mobile_insider'] !== variable_get('platformoptions_mobile_insider', '')
+  ) {
+    variable_set('platformoptions_mobile_insider', $form_state['values']['platformoptions_mobile_insider']);
+  }
+  if ($form_state['values']['platformoptions_mobile_article'] !== '' &&
+    $form_state['values']['platformoptions_mobile_article'] !== variable_get('platformoptions_mobile_article', '')
+  ) {
+    variable_set('platformoptions_mobile_article', $form_state['values']['platformoptions_mobile_article']);
+  }
+  if ($form_state['values']['platformoptions_pagehead_desktop']) {
+    $file = file_load($form_state['values']['platformoptions_pagehead_desktop']);
+    $file->status = FILE_STATUS_PERMANENT;
+    file_save($file);
+    file_usage_add($file, 'platformoptions', 'pagehead_desktop', 1);
+  }
+  if ($form_state['values']['platformoptions_pagehead_mobile']) {
+    $file = file_load($form_state['values']['platformoptions_pagehead_mobile']);
+    $file->status = FILE_STATUS_PERMANENT;
+    file_save($file);
+    file_usage_add($file, 'platformoptions', 'pagehead_mobile', 2);
+  }
+  if ($form_state['values']['platformoptions_favicon']) {
+    $file = file_load($form_state['values']['platformoptions_favicon']);
+    $file->status = FILE_STATUS_PERMANENT;
+    file_save($file);
+    file_usage_add($file, 'platformoptions', 'favicon', 3);
+  }
+  if ($form_state['values']['platformoptions_facebook'] !== '' &&
+    $form_state['values']['platformoptions_facebook'] !== variable_get('platformoptions_facebook', '')
+  ) {
+    variable_set('platformoptions_facebook', $form_state['values']['platformoptions_facebook']);
+  }
+  if ($form_state['values']['platformoptions_annonsbalk_topp'] !== '' &&
+    $form_state['values']['platformoptions_annonsbalk_topp'] !== variable_get('platformoptions_annonsbalk_topp', '')
+  ) {
+    variable_set('platformoptions_annonsbalk_topp', $form_state['values']['platformoptions_annonsbalk_topp']);
+  }
+  if ($form_state['values']['platformoptions_annonsbalk_botten'] !== '' &&
+    $form_state['values']['platformoptions_annonsbalk_botten'] !== variable_get('platformoptions_annonsbalk_botten', '')
+  ) {
+    variable_set('platformoptions_annonsbalk_botten', $form_state['values']['platformoptions_annonsbalk_botten']);
+  }
+  error_log('formstate:'. print_r($form_state['values']['platformoptions_visaannonsbalkar']['1'],true));
+  if ($form_state['values']['platformoptions_visaannonsbalkar']['1'] !== '' &&
+    $form_state['values']['platformoptions_visaannonsbalkar']['1'] !== variable_get('platformoptions_visaannonsbalkar', '')
+  ) {
+    variable_set('platformoptions_visaannonsbalkar', $form_state['values']['platformoptions_visaannonsbalkar']['1']);
+  }
+}
+
+/**
+ *  Implements hook_block_info().
+ */
+function platformoptions_block_info() {
+  // This example comes from node.module.
+  $blocks['panorama1'] = array(
+    'info' => t('AD: Panorama 1'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['panorama2'] = array(
+    'info' => t('AD: Panorama 2'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['insider1'] = array(
+    'info' => t('AD: Insider 1'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['outsider1'] = array(
+    'info' => t('AD: Outsider 1'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['mobile_panorama'] = array(
+    'info' => t('AD: Mobile panorama'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['mobile_insider'] = array(
+    'info' => t('AD: Mobile insider'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['mobile_article'] = array(
+    'info' => t('AD: Mobile article'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['facebook'] = array(
+    'info' => t('SOCIAL: Facebook'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['annonsbalk_topp'] = array(
+    'info' => t('OTHER: Annonsbalk topp'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['annonsbalk_botten'] = array(
+    'info' => t('OTHER: Annonsbalk botten'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  return $blocks;
+}
+
+/**
+ *  Implements hook_block_view().
+ */
+function platformoptions_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'panorama1':
+      $block['subject'] = t('Panorama1');
+      $block['content'] = variable_get('platformoptions_panorama1', '');
+      break;
+    case 'panorama2':
+      $block['subject'] = t('Panorama2');
+      $block['content'] = variable_get('platformoptions_panorama2', '');
+      break;
+    case 'insider1':
+      $block['subject'] = t('Insider1');
+      $block['content'] = variable_get('platformoptions_insider1', '');
+      break;
+    case 'outsider1':
+      $block['subject'] = t('Outsider1');
+      $block['content'] = variable_get('platformoptions_outsider1', '');
+      break;
+    case 'mobile_panorama':
+      $block['subject'] = t('Mobile panorama');
+      $block['content'] = variable_get('platformoptions_mobile_panorama', '');
+      break;
+    case 'mobile_insider':
+      $block['subject'] = t('Mobile insider');
+      $block['content'] = variable_get('platformoptions_mobile_insider', '');
+      break;
+    case 'mobile_article':
+      $block['subject'] = t('Mobile article');
+      $block['content'] = variable_get('platformoptions_mobile_article', '');
+      break;
+    case 'facebook':
+      $block['subject'] = t('Facebook');
+      $block['content'] = _platformoptions_facebook(variable_get('platformoptions_facebook', ''));
+      break;
+    case 'annonsbalk_topp':
+      $block['subject'] = t('Annonsbalk topp');
+      if(variable_get('platformoptions_visaannonsbalkar','')==='1'){
+        $block['content'] = '<div class="annonsbalk" id="topp">'. variable_get('platformoptions_annonsbalk_topp',''). '</div>';
+      } else {
+        $block['content'] = '';
+      }
+      break;
+    case 'annonsbalk_botten':
+      $block['subject'] = t('Annonsbalk botten');
+      if(variable_get('platformoptions_visaannonsbalkar','')==='1'){
+        $block['content'] = '<div class="annonsbalk" id="botten">'. variable_get('platformoptions_annonsbalk_botten',''). '</div>';
+      } else {
+        $block['content'] = '';
+      }
+      break;
+  }
+  return $block;
+}
+
+function _platformoptions_facebook($facebookid){
+  return "<div id=\"fb-root\"></div>
+<script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = \"//connect.facebook.net/en_US/all.js#xfbml=1\";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class=\"fb-like-box\" data-href=\"http://www.facebook.com/" . $facebookid . "\" data-width=\"450\" data-colorscheme=\"light\" data-show-faces=\"true\" data-header=\"true\" data-stream=\"true\" data-show-border=\"true\"></div>";
+}
