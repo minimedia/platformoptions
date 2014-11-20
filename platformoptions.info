@@ -1,4 +1,4 @@
 name = platformoptions
 description = Base platform user-configurable options for pagehead image, ad tags and custom tracking
 core = 7.x
-version = 7.x-1.02
+version = 7.x-1.03
