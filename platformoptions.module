@@ -34,13 +34,13 @@ function platformoptions_menu() {
 function platformoptions_preprocess(&$vars, $hook) {
   if ($hook === 'page') {
     $vars['customtracking'] = token_replace(variable_get('platformoptions_customtracking', ''), array('date'));
-    $vars['panorama1'] = variable_get('platformoptions_panorama1', '');
-    $vars['panorama2'] = variable_get('platformoptions_panorama2', '');
-    $vars['insider1'] = variable_get('platformoptions_insider1', '');
-    $vars['outsider1'] = variable_get('platformoptions_outsider1', '');
-    $vars['mobile_panorama'] = variable_get('platformoptions_mobile_panorama', '');
-    $vars['mobile_insider'] = variable_get('platformoptions_mobile_insider', '');
-    $vars['mobile_article'] = variable_get('platformoptions_mobile_article', '');
+    $vars['panorama1'] = token_replace(variable_get('platformoptions_panorama1', ''), array('date'));
+    $vars['panorama2'] = token_replace(variable_get('platformoptions_panorama2', ''), array('date'));
+    $vars['insider1'] = token_replace(variable_get('platformoptions_insider1', ''), array('date'));
+    $vars['outsider1'] = token_replace(variable_get('platformoptions_outsider1', ''), array('date'));
+    $vars['mobile_panorama'] = token_replace(variable_get('platformoptions_mobile_panorama', ''), array('date'));
+    $vars['mobile_insider'] = token_replace(variable_get('platformoptions_mobile_insider', ''), array('date'));
+    $vars['mobile_article'] = token_replace(variable_get('platformoptions_mobile_article', ''), array('date'));
 
     if (variable_get('platformoptions_pagehead_desktop', '') !== 0) {
       error_log('creating url for pagehead');
@@ -97,49 +97,49 @@ function platformoptions_admin() {
     '#type' => 'textarea',
     '#title' => t('Panorama 1'),
     '#default_value' => variable_get('platformoptions_panorama1', ''),
-    '#description' => t("Paste panorama 1 ad tag here."),
+    '#description' => t("Paste panorama 1 ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['ads']['platformoptions_panorama2'] = array(
     '#type' => 'textarea',
     '#title' => t('Panorama 2'),
     '#default_value' => variable_get('platformoptions_panorama2', ''),
-    '#description' => t("Paste panorama 2 ad tag here."),
+    '#description' => t("Paste panorama 2 ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['ads']['platformoptions_insider1'] = array(
     '#type' => 'textarea',
     '#title' => t('Insider 1'),
     '#default_value' => variable_get('platformoptions_insider1', ''),
-    '#description' => t("Paste insider 1 ad tag here."),
+    '#description' => t("Paste insider 1 ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['ads']['platformoptions_outsider1'] = array(
     '#type' => 'textarea',
     '#title' => t('Outsider 1'),
     '#default_value' => variable_get('platformoptions_outsider1', ''),
-    '#description' => t("Paste outsider 1 ad tag here."),
+    '#description' => t("Paste outsider 1 ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['ads']['platformoptions_mobile_panorama'] = array(
     '#type' => 'textarea',
     '#title' => t('Mobile panorama'),
     '#default_value' => variable_get('platformoptions_mobile_panorama', ''),
-    '#description' => t("Paste mobile panorama ad tag here."),
+    '#description' => t("Paste mobile panorama ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['ads']['platformoptions_mobile_insider'] = array(
     '#type' => 'textarea',
     '#title' => t('Mobile insider'),
     '#default_value' => variable_get('platformoptions_mobile_insider', ''),
-    '#description' => t("Paste mobile insider ad tag here."),
+    '#description' => t("Paste mobile insider ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['ads']['platformoptions_mobile_article'] = array(
     '#type' => 'textarea',
     '#title' => t('Mobile article'),
     '#default_value' => variable_get('platformoptions_mobile_article', ''),
-    '#description' => t("Paste mobile article ad tag here."),
+    '#description' => t("Paste mobile article ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
     '#required' => FALSE,
   );
   $form['headers'] = array(
