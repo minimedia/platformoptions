@@ -41,7 +41,8 @@ function platformoptions_preprocess(&$vars, $hook) {
     $vars['mobile_panorama'] = token_replace(variable_get('platformoptions_mobile_panorama', ''), array('date'));
     $vars['mobile_insider'] = token_replace(variable_get('platformoptions_mobile_insider', ''), array('date'));
     $vars['mobile_article'] = token_replace(variable_get('platformoptions_mobile_article', ''), array('date'));
-
+    $vars['visasidhuvud'] = variable_get('platformoptions_visasidhuvud',true);
+    $vars['visameny'] = variable_get('platformoptions_visameny',true);
     if (variable_get('platformoptions_pagehead_desktop', '') !== 0) {
       error_log('creating url for pagehead');
       $file = file_load(variable_get('platformoptions_pagehead_desktop'));
@@ -59,18 +60,39 @@ function platformoptions_preprocess(&$vars, $hook) {
       $url = $file->uri;
       $vars['favicon'] = file_create_url($url);
     }
+  } else if ($hook === 'html') {
+    $vars['isembeddedmode'] = variable_get('platformoptions_isembeddedmode',0) ? 'true' : 'false';
+    error_log('isembeddedmode:'.$vars['isembeddedmode']);
   }
 }
 
 function platformoptions_admin() {
   $form = array();
+  $form['embeddedmode'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Embedded mode'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  if(variable_get('platformoptions_isembeddedmode') === '1'){
+    $default = '1';
+  } else {
+    $default = '0';
+  }
+  $form['embeddedmode']['platformoptions_isembeddedmode'] = array(
+    '#type' => 'radios',
+    '#title' => t('Site loaded in embedded mode'),
+    '#options' => array('1'=>'Yes','0'=>'No'),
+    '#default_value' => $default,
+    '#description' => t("Enable if you are loading the site in embedded mode."),
+    '#required' => FALSE,
+  );
   $form['tracking'] = array(
     '#type' => 'fieldset',
     '#title' => t('Tracking'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-
   $form['tracking']['platformoptions_googleanalyticsaccount'] = array(
     '#type' => 'textfield',
     '#size' => 32,
@@ -140,6 +162,38 @@ function platformoptions_admin() {
     '#title' => t('Mobile article'),
     '#default_value' => variable_get('platformoptions_mobile_article', ''),
     '#description' => t("Paste mobile article ad tag here. Available variables: [current-date:raw] (current time in milliseconds, suitable for tracking codes that need a random part)"),
+    '#required' => FALSE,
+  );
+  $form['other'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Other'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  if(variable_get('platformoptions_visasidhuvud') === '1'){
+    $default = '1';
+  } else {
+    $default = '0';
+  }
+  $form['other']['platformoptions_visasidhuvud'] = array(
+    '#type' => 'radios',
+    '#title' => t('Show page head'),
+    '#options' => array('1'=>'Yes','0'=>'No'),
+    '#default_value' => $default,
+    '#description' => t("Enable or disable display of Page head."),
+    '#required' => FALSE,
+  );
+  if(variable_get('platformoptions_visameny') === '1'){
+    $default = '1';
+  } else {
+    $default = '0';
+  }
+  $form['other']['platformoptions_visameny'] = array(
+    '#type' => 'radios',
+    '#title' => t('Show Page menu'),
+    '#options' => array('1'=>'Yes','0'=>'No'),
+    '#default_value' => $default,
+    '#description' => t("Enable or disable display of Page menu."),
     '#required' => FALSE,
   );
   $form['headers'] = array(
@@ -307,11 +361,25 @@ function platformoptions_form_submit($form, $form_state) {
   ) {
     variable_set('platformoptions_annonsbalk_botten', $form_state['values']['platformoptions_annonsbalk_botten']);
   }
-  error_log('formstate:'. print_r($form_state['values']['platformoptions_visaannonsbalkar']['1'],true));
   if ($form_state['values']['platformoptions_visaannonsbalkar']['1'] !== '' &&
     $form_state['values']['platformoptions_visaannonsbalkar']['1'] !== variable_get('platformoptions_visaannonsbalkar', '')
   ) {
     variable_set('platformoptions_visaannonsbalkar', $form_state['values']['platformoptions_visaannonsbalkar']['1']);
+  }
+  if ($form_state['values']['platformoptions_visasidhuvud']['1'] !== '' &&
+    $form_state['values']['platformoptions_visasidhuvud']['1'] !== variable_get('platformoptions_visasidhuvud', '')
+  ) {
+    variable_set('platformoptions_visasidhuvud', $form_state['values']['platformoptions_visasidhuvud']['1']);
+  }
+  if ($form_state['values']['platformoptions_visameny']['1'] !== '' &&
+    $form_state['values']['platformoptions_visameny']['1'] !== variable_get('platformoptions_visameny', '')
+  ) {
+    variable_set('platformoptions_visameny', $form_state['values']['platformoptions_visameny']['1']);
+  }
+  if ($form_state['values']['platformoptions_isembeddedmode']['1'] !== '' &&
+    $form_state['values']['platformoptions_isembeddedmode']['1'] !== variable_get('platformoptions_isembeddedmode', '')
+  ) {
+    variable_set('platformoptions_isembeddedmode', $form_state['values']['platformoptions_isembeddedmode']['1']);
   }
 }
 
