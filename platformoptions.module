@@ -34,13 +34,13 @@ function platformoptions_menu() {
 function platformoptions_preprocess(&$vars, $hook) {
   if ($hook === 'page') {
     $vars['customtracking'] = '<!-- CUSTOMER TRACKING -->' . token_replace(variable_get('platformoptions_customtracking', ''), array('date')) . '<!-- / CUSTOMER TRACKING -->';
-    $vars['panorama1'] = token_replace(variable_get('platformoptions_panorama1', ''), array('date'));
-    $vars['panorama2'] = token_replace(variable_get('platformoptions_panorama2', ''), array('date'));
-    $vars['insider1'] = token_replace(variable_get('platformoptions_insider1', ''), array('date'));
-    $vars['outsider1'] = token_replace(variable_get('platformoptions_outsider1', ''), array('date'));
-    $vars['mobile_panorama'] = token_replace(variable_get('platformoptions_mobile_panorama', ''), array('date'));
-    $vars['mobile_insider'] = token_replace(variable_get('platformoptions_mobile_insider', ''), array('date'));
-    $vars['mobile_article'] = token_replace(variable_get('platformoptions_mobile_article', ''), array('date'));
+    $vars['panorama1'] = token_replace(variable_get('platformoptions_panorama1', ''), array('date','term'));
+    $vars['panorama2'] = token_replace(variable_get('platformoptions_panorama2', ''), array('date','term'));
+    $vars['insider1'] = token_replace(variable_get('platformoptions_insider1', ''), array('date','term'));
+    $vars['outsider1'] = token_replace(variable_get('platformoptions_outsider1', ''), array('date','term'));
+    $vars['mobile_panorama'] = token_replace(variable_get('platformoptions_mobile_panorama', ''), array('date','term'));
+    $vars['mobile_insider'] = token_replace(variable_get('platformoptions_mobile_insider', ''), array('date','term'));
+    $vars['mobile_article'] = token_replace(variable_get('platformoptions_mobile_article', ''), array('date','term'));
     $vars['visasidhuvud'] = variable_get('platformoptions_visasidhuvud',true);
     $vars['visameny'] = variable_get('platformoptions_visameny',true);
     if (variable_get('platformoptions_pagehead_desktop', '') !== 0) {
