@@ -34,7 +34,7 @@ function platformoptions_menu() {
 function platformoptions_preprocess(&$vars, $hook) {
   if ($hook === 'page') {
     $vars['customtracking'] = '<!-- CUSTOMER TRACKING -->' . token_replace(variable_get('platformoptions_customtracking', ''), array('date')) . '<!-- / CUSTOMER TRACKING -->';
-    $vars['panorama1'] = token_replace(variable_get('platformoptions_panorama1', ''), array('date','term'));
+    $vars['panorama1'] = token_replace(variable_get('platformoptions_panorama1', ''), array('date','node'=>$node));
     $vars['panorama2'] = token_replace(variable_get('platformoptions_panorama2', ''), array('date','term'));
     $vars['insider1'] = token_replace(variable_get('platformoptions_insider1', ''), array('date','term'));
     $vars['outsider1'] = token_replace(variable_get('platformoptions_outsider1', ''), array('date','term'));
