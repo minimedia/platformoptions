@@ -488,31 +488,31 @@ function platformoptions_block_view($delta = '') {
   switch ($delta) {
     case 'panorama1':
       $block['subject'] = t('Panorama1');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_panorama1', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_panorama1', ''));
       break;
     case 'panorama2':
       $block['subject'] = t('Panorama2');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_panorama2', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_panorama2', ''));
       break;
     case 'insider1':
       $block['subject'] = t('Insider1');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_insider1', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_insider1', ''));
       break;
     case 'outsider1':
       $block['subject'] = t('Outsider1');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_outsider1', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_outsider1', ''));
       break;
     case 'mobile_panorama':
       $block['subject'] = t('Mobile panorama');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_mobile_panorama', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_mobile_panorama', ''));
       break;
     case 'mobile_insider':
       $block['subject'] = t('Mobile insider');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_mobile_insider', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_mobile_insider', ''));
       break;
     case 'mobile_article':
       $block['subject'] = t('Mobile article');
-      $block['content'] = str_replace('%sektion%',_platformoptions_get_sektion(),variable_get('platformoptions_mobile_article', ''));
+      $block['content'] = _platformoptions_replace_placeholders(variable_get('platformoptions_mobile_article', ''));
       break;
     case 'facebook':
       $block['subject'] = t('Facebook');
@@ -550,14 +550,25 @@ function _platformoptions_facebook($facebookid){
 <div class=\"fb-like-box\" data-href=\"http://www.facebook.com/" . $facebookid . "\" data-width=\"450\" data-colorscheme=\"light\" data-show-faces=\"true\" data-header=\"true\" data-stream=\"true\" data-show-border=\"true\"></div>";
 }
 
-function _platformoptions_get_sektion(){
+function _platformoptions_replace_placeholders($searchstr){
+  // Node id
+  $sektion  = '';
+  $nodeid   = '';
+
+  // Load section id
   $nobj = menu_get_object('node');
   if(is_numeric($nobj->nid)){
+    $nodeid = $nobj->nid;
     $node = node_load($nobj->nid);
     $term = taxonomy_term_load($node->field_kategori['und'][0]['tid']);
     $sektion = strtolower(str_replace(' ','',$term->name));
   } else {
     $sektion = 'default';
   }
-  return $sektion;
+
+  $searchstr = str_replace('%sektion%',$sektion,$searchstr);
+  $searchstr = str_replace('%undersektion%',$nodeid,$searchstr);
+  $searchstr = str_replace('%rand%',time(),$searchstr);
+
+  return $searchstr;
 }
