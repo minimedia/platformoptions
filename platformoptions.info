@@ -1,6 +1,6 @@
 name = platformoptions
 description = Base platform user-configurable options for pagehead image, ad tags and custom tracking
 core = 7.x
-version = 7.x-1.12
+version = 7.x-1.13
 project = "platformoptions"
 project status url = "http://features.minimedia.se/fserver"
