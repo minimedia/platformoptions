@@ -532,6 +532,7 @@ function platformoptions_block_view($delta = '') {
 }
 
 function _platformoptions_facebook($facebookid){
+  if (!empty($facebookid)){
   return "<div id=\"fb-root\"></div>
 <script>(function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
@@ -541,6 +542,9 @@ function _platformoptions_facebook($facebookid){
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 <div class=\"fb-like-box\" data-href=\"http://www.facebook.com/" . $facebookid . "\" data-width=\"450\" data-colorscheme=\"light\" data-show-faces=\"true\" data-header=\"true\" data-stream=\"true\" data-show-border=\"true\"></div>";
+  } else {
+    return '';
+  }
 }
 
 function _platformoptions_replace_placeholders($searchstr){
