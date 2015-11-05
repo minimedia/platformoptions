@@ -276,6 +276,10 @@ function platformoptions_admin() {
     '#description' => t('Image must be 480x80px. The uploaded image will be displayed on top of each page.'),
     '#default_value' => variable_get('platformoptions_pagehead_mobile', ''),
     '#upload_location' => 'public://platformoptions/pagehead/mobile/',
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('gif png jpg jpeg'),
+      'file_validate_size' => array(MAX_FILE_SIZE*1024*1024),
+    ),
   );
   $form['img']['platformoptions_favicon'] = array(
     '#title' => t('Browser favicon'),
@@ -531,17 +535,20 @@ function platformoptions_block_view($delta = '') {
   return $block;
 }
 
+
 function _platformoptions_facebook($facebookid){
   if (!empty($facebookid)){
-  return "<div id=\"fb-root\"></div>
+    return "<div id=\"fb-root\"></div>
 <script>(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
+  var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
-  js.src = \"//connect.facebook.net/en_US/all.js#xfbml=1\";
+  js.src = \"//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5\";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
-<div class=\"fb-like-box\" data-href=\"http://www.facebook.com/" . $facebookid . "\" data-width=\"450\" data-colorscheme=\"light\" data-show-faces=\"true\" data-header=\"true\" data-stream=\"true\" data-show-border=\"true\"></div>";
+<div style=\"width: 100%;\">
+<div class=\"fb-page\" data-href=\"https://www.facebook.com/" . $facebookid . "\" data-small-header=\"true\" data-adapt-container-width=\"true\" data-hide-cover=\"false\" data-show-facepile=\"true\" data-show-posts=\"true\" data-width=\"500\"><div class=\"fb-xfbml-parse-ignore\"><blockquote cite=\"https://www.facebook.com/facebook" . $facebookid . "\"><a href=\"https://www.facebook.com/" . $facebookid . "\">Facebook</a></blockquote></div></div>
+</div>";
   } else {
     return '';
   }
