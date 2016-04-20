@@ -58,6 +58,8 @@ function platformoptions_preprocess(&$vars, $hook) {
     if(variable_get('platformoptions_hasexternalcss','') && variable_get('platformoptions_externalcssfile','')) {
       drupal_add_css(variable_get('platformoptions_externalcssfile',''),array('type'=>'external','group'=>CSS_THEME));
     }
+    $vars['visaannonsbalkar'] = variable_get('platformoptions_visaannonsbalkar',0) ? 'true' : 'false';
+    $vars['visasok'] = variable_get('platformoptions_visasok',0) ? 'true' : 'false';
     //error_log('isembeddedmode:'.$vars['isembeddedmode']);
   }
 }
@@ -218,6 +220,19 @@ function platformoptions_admin() {
     '#options' => array('1'=>'Yes','0'=>'No'),
     '#default_value' => $default,
     '#description' => t("Enable or disable display of Page menu."),
+    '#required' => FALSE,
+  );
+  if(variable_get('platformoptions_visasok') === '1'){
+    $default = '1';
+  } else {
+    $default = '0';
+  }
+  $form['other']['platformoptions_visasok'] = array(
+    '#type' => 'radios',
+    '#title' => t('Show Search field'),
+    '#options' => array('1'=>'Yes','0'=>'No'),
+    '#default_value' => $default,
+    '#description' => t("Enable or disable display of Search field."),
     '#required' => FALSE,
   );
   $form['headers'] = array(
@@ -403,6 +418,11 @@ function platformoptions_form_submit($form, $form_state) {
       $form_state['values']['platformoptions_visameny']['1'] !== variable_get('platformoptions_visameny', '')
   ) {
     variable_set('platformoptions_visameny', $form_state['values']['platformoptions_visameny']['1']);
+  }
+  if ($form_state['values']['platformoptions_visasok']['1'] !== '' &&
+      $form_state['values']['platformoptions_visasok']['1'] !== variable_get('platformoptions_visasok', '')
+  ) {
+    variable_set('platformoptions_visasok', $form_state['values']['platformoptions_visasok']['1']);
   }
   if ($form_state['values']['platformoptions_isembeddedmode']['1'] !== '' &&
       $form_state['values']['platformoptions_isembeddedmode']['1'] !== variable_get('platformoptions_isembeddedmode', '')
